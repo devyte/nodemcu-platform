@@ -34,8 +34,6 @@ end
 
 local function parseFormData(body)
   local data = {}
---  print("Parsing Form Data")
---  print("heap="..tostring(node.heap()))
   assert(body~=nil, "empty body")
   for kv in body.gmatch(body, "%s*&?([^=]+=[^&]+)") do
     local key, value = string.match(kv, "(.*)=(.*)")
@@ -43,26 +41,21 @@ local function parseFormData(body)
 --    print("Parsed: " .. key .. " => " .. value)
     data[key] = uri_decode(value)
   end
---  print("heap="..tostring(node.heap()))
---  print("Parsing Form Data end")
   return data
 end
 
 local function getRequestData(payload)
   local requestData
   return function ()
---    print("Getting Request Data")
     if requestData then
       return requestData
     else
       local mimeType = string.match(payload, "Content%-Type: ([%w/-]+)")
---       print("payload="..payload)
       local body_start = payload:find("\r\n\r\n", 1, true)
       local body = payload:sub(body_start, #payload)
       payload = nil
       collectgarbage()
       
---       print("mimeType = [" .. mimeType .. "]")
       if mimeType == "application/json" then
 --        print("JSON: " .. body)
         requestData = cjson.decode(body)
@@ -112,9 +105,6 @@ end
 -- Parses the client's request. Returns a dictionary containing pretty much everything
 -- the server needs to know about the uri.
 return function (request)
---    print("httpserver-request.lc")
---    print("heap="..tostring(node.heap()))
-
    local e = request:find("\r\n", 1, true)
    if not e then 
      print("httpserver-request.lc: nil e")
@@ -129,7 +119,5 @@ return function (request)
    r.uri = parseUri(r.request)
    r.getRequestData = getRequestData(request)
    collectgarbage()
---   print("heap="..tostring(node.heap()))
---   print("httpserver-request.lc end")
    return r
 end
