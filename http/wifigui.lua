@@ -63,7 +63,7 @@ return function (connection, req, args)
                 collectgarbage()
             end
             
-            --serve the form aain
+            --serve the form again
             dofile("http/wifigui-sendform.lc")(req.method, connection, wifiConfig)
             collectgarbage()
         else
