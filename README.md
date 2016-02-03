@@ -47,3 +47,8 @@ Some comments and guidelines:
   6. After each dofile(), call collectgarbage().
   7. Whatever you do, don't do many string concats in a row, e.g.: local str = "str1".."str2".."str3" ..... .."str20" and so on. It's very temtping to do that when implementing a .lc that gets served like a webpage. Multiple concatenations make for extremely lousy performance, and a large memory requirement, particularly if done inside a tight loop. Instead, collect strings in a table, then do table.concat(tab) once at the end.
 
+## Planned work
+  1. Websocket server module, to run alongside the httpserver module
+  2. Modbus server module
+  3. Additional webguis
+ 
