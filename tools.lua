@@ -1,6 +1,6 @@
---wrapper to print ip info
 tools = {}
 
+--wrapper to print ip info
 function tools.printip()
     local ip, mask, gateway = wifi.sta.getip();
     if(ip) then
@@ -9,9 +9,6 @@ function tools.printip()
         print("no ip");
     end
 end
-
-
-
 
 --list visible wifi networks
 function tools.listap() -- (SSID : Authmode, RSSI, BSSID, Channel)
@@ -35,8 +32,6 @@ function tools.listap() -- (SSID : Authmode, RSSI, BSSID, Channel)
 end
 
 
-
-
 function tools.listGlobal(glob)
     for k,v in pairs(glob) do
         print("k="..tostring(k).." v="..tostring(v))
@@ -56,12 +51,9 @@ function tools.mv(regex, dest)
 
     --wrap to force consuming all
     local regex = "^("..regex..")$"
---print("regex="..regex)
---print("==========================================")
     local file_list = file.list()
     if dest == ".." then
         for k,v in pairs(file_list) do
---            print("k="..k)
             if(string.match(k, regex) ~= nil) then
                 diridx = string.find(k, "/")
                 if(diridx ~= nil) then
@@ -77,9 +69,7 @@ function tools.mv(regex, dest)
         end
      else 
         for k,v in pairs(file_list) do
---            print("k="..k)
             if(string.match(k, regex) ~= nil) then
---            print("k="..k.." matched")
                 local destname = dest.."/"..k
                 if(file.open(destname) ~= nil) then
                     file.close(destname)
@@ -119,9 +109,9 @@ function tools.ll(regex)
           regex = ".*"
      end
      --wrap to force consuming all
-     local regex = "^("..regex..")$"
+    local regex = "^("..regex..")$"
 
-     local file_list = file.list()
+    local file_list = file.list()
 
     local sorted_file_list = {}
     for n,s in pairs(file_list) do
@@ -154,17 +144,6 @@ function tools.more(fn)
     end
     file.close()
 end
-
-
-
--- print "hello world" every 1000ms
---function timerStart()
---    tmr.alarm(0, 1000, 1, function() print("hello world") end );
---end
-
---function timerStop()
---    tmr.stop(0);
---end
 
 --gpio to pin number lut
 --gpio2pin = {[0]=3,[1]=10,[2]=4,[3]=9,[4]=2,[5]=1,[10]=12,[12]=6,[13]=7,[14]=5,[15]=8,[16]=0}
