@@ -4,7 +4,6 @@
 
 return function (connection, req, args)
    dofile("httpserver-header.lc")(connection, 200, args.ext, args.gzipped)
-   --print("Begin sending:", args.file)
    -- Send file in little chunks
    local continue = true
    local bytesSent = 0
@@ -24,8 +23,6 @@ return function (connection, req, args)
          bytesSent = bytesSent + #chunk
          chunk = nil
          tmr.wdclr() -- loop can take a while for long files. tmr.wdclr() prevent watchdog to restart module
-         --print("Sent" .. args.file, bytesSent)
       end
    end
-   --print("Finished sending:", args.file)
 end
