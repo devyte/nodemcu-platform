@@ -48,7 +48,7 @@ return function (port, _servermodules)
     end    
 
 
-    local s = net.createServer(net.TCP, 180) -- 10 seconds client timeout
+    local s = net.createServer(net.TCP, 180) -- 180 seconds client timeout
     s:listen(port, tcpserver)
     
     -- false and nil evaluate as false
