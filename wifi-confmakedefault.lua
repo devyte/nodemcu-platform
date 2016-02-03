@@ -8,7 +8,7 @@ wifiConfig.phymode = wifi.PHYMODE_N
 
 wifiConfig.accessPointConfig = {}
 wifiConfig.accessPointConfig.ssid = "ESP-"..node.chipid()   -- Name of the SSID you want to create
-wifiConfig.accessPointConfig.pwd = "lapelotaesmia"    -- WiFi password - at least 8 characters
+wifiConfig.accessPointConfig.pwd = "theballismine"    -- WiFi password - at least 8 characters
 wifiConfig.accessPointConfig.auth = wifi.WPA2_PSK --OPEN/WPA_PSK/WPA2_PSK/WPA_WPA2_PSK
 wifiConfig.accessPointConfig.channel = 6 -- 1-14
 wifiConfig.accessPointConfig.hidden = 0
@@ -27,7 +27,7 @@ wifiConfig.accessPointDHCPConfig.start = "192.168.111.100"
 
 wifiConfig.stationPointConfig = {}
 wifiConfig.stationPointConfig.ssid = "devnet"        -- Name of the WiFi network you want to join
-wifiConfig.stationPointConfig.pwd =  "lapelotaesmia"                -- Password for the WiFi network
+wifiConfig.stationPointConfig.pwd =  "theballismine"                -- Password for the WiFi network
 wifiConfig.stationPointConfig.auto = 1
 wifiConfig.stationPointConfig.hostname = "ESP-"..node.chipid()
 
