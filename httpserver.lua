@@ -7,7 +7,6 @@ return function (conn)
     local function detect(payload)
         local sm, em, method, request, trailer = payload:find("^([A-Z]+) (.-) (HTTP/[1-9]+.[0-9]+)")
         local ret = (method ~= nil) and (request ~= nil) and (trailer ~= nil)
-    --uart.write(0, "httpserver.detect()="..tostring(ret).."\r\n")
         return ret
     end
 
@@ -72,7 +71,7 @@ return function (conn)
 
         print("Method: " .. method);
 
-        if #(uri.file) > 32 then
+        if #(uri.file) > 31 then
             -- nodemcu-firmware cannot handle long filenames.
             uri.args = {code = 400, errorString = "Bad Request"}
             fileServeFunction = dofile("httpserver-error.lc")
@@ -133,10 +132,7 @@ return function (conn)
             tmp_payload, bBodyMissing = nil    
         end
     end
-           
-        
---    print("onReceive()")
---    print("heap="..tostring(node.heap()))
+
         local conf = dofile("httpserver-conf.lc")
         local auth
         local user = "Anonymous"
@@ -163,14 +159,10 @@ return function (conn)
             end
             startServing(fileServeFunction, connection, req, args)
         end
---    print("heap="..tostring(node.heap()))
---    print("onReceive() end")
     end
 
     local function onSent(connection, payload)
         collectgarbage()
---    print("onSent()")
---    print("heap="..tostring(node.heap()))
         if connectionThread then
             local connectionThreadStatus = coroutine.status(connectionThread) 
             if connectionThreadStatus == "suspended" then
@@ -185,15 +177,12 @@ return function (conn)
                 connectionThread = nil
             end
         end
---    print("heap="..tostring(node.heap()))
---    print("onSent() end")
     end
     
     local function install(connection)
         connection:on("receive", onReceive)
         connection:on("sent", onSent)
     end
-
-
+    
     return detect, install, onReceive
 end
