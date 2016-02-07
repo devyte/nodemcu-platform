@@ -5,9 +5,12 @@ return function (connection, req, args)
  
 
     if req.method == "GET" then
-        dofile("http/wifigui-sendform.lc")(req.method, connection, wifiConfig)
+print("wifigui: GET")
+        dofile("http/wifigui-form.lc")(req.method, connection, wifiConfig)
+print("wifigui: GET done")
         collectgarbage()
     elseif req.method == "POST" then      
+print("wifigui: POST")
         local rd = req.getRequestData()
         local badvalues = dofile("http/wifigui-validate.lc")(rd)
         collectgarbage()
@@ -64,14 +67,16 @@ return function (connection, req, args)
             end
             
             --serve the form again
-            dofile("http/wifigui-sendform.lc")(req.method, connection, wifiConfig)
+            dofile("http/wifigui-form.lc")(req.method, connection, wifiConfig)
             collectgarbage()
         else
-            dofile("http/wifigui-sendform.lc")(req.method, connection, wifiConfig, rd, badvalues)
+            dofile("http/wifigui-form.lc")(req.method, connection, wifiConfig, rd, badvalues)
         end
+print("wifigui: POST end")
     else
         connection:send("NOT IMPLEMENTED")
     end
+
    
     collectgarbage()
 end

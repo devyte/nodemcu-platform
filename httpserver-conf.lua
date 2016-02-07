@@ -5,11 +5,10 @@
 local conf = {}
 
 -- Basic Authentication Conf
-local auth = {}
-auth.enabled = true
-auth.realm = "nodemcu-httpserver" -- displayed in the login dialog users get
-auth.user = "develo"
-auth.password = "lapelotaesmia" -- PLEASE change this
-conf.auth = auth
+conf.auth = {}
+conf.auth.enabled = true
+conf.auth.realm = "nodemcu-httpserver" -- displayed in the login dialog users get
+conf.auth.user = "develo"
+conf.auth.password = "lapelotaesmia" -- PLEASE change this
 
 return conf
