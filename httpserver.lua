@@ -117,21 +117,41 @@ return function (conn)
         collectgarbage()
 
 -- collect data packets until the size of http body meets the Content-Length stated in header
-    if payload:find("Content%-Length:") or bBodyMissing then
-        if tmp_payload then 
-            tmp_payload = tmp_payload .. payload 
-        else 
-            tmp_payload = payload 
+        if payload:find("Content%-Length:") or bBodyMissing then
+            if tmp_payload then 
+                tmp_payload = tmp_payload .. payload 
+            else
+                tmp_payload = payload 
+            end
+            if (tonumber(string.match(tmp_payload, "%d+", tmp_payload:find("Content%-Length:")+16)) > #tmp_payload:sub(tmp_payload:find("\r\n\r\n", 1, true)+4, #tmp_payload)) then
+                bBodyMissing = true
+                return
+            else
+                print("HTTP packet assembled! size: "..#tmp_payload)
+                payload = tmp_payload
+                tmp_payload, bBodyMissing = nil    
+            end
         end
-        if (tonumber(string.match(tmp_payload, "%d+", tmp_payload:find("Content%-Length:")+16)) > #tmp_payload:sub(tmp_payload:find("\r\n\r\n", 1, true)+4, #tmp_payload)) then
-            bBodyMissing = true
-            return
-        else
-            print("HTTP packet assembled! size: "..#tmp_payload)
-            payload = tmp_payload
-            tmp_payload, bBodyMissing = nil    
+
+    
+        local conf = {}
+        if file.open("httpserver-conf-default.lc", "r") == nil then
+            print("httpserver-conf-default.lc (default wifi config) not found, creating...")
+            conf = dofile("httpserver-confmakedefault.lc")
+            dofile("httpserver-confwrite.lc")(conf, "httpserver-conf-default.lua")
+            dofile("compile.lc")("httpserver-conf-default.lua")
         end
-    end
+        file.close()
+        
+        --check if the user config file exists, if not save the default config to it
+        if file.open("httpserver-conf.lc", "r") == nil then
+            print("httpserver-conf.lc (user httpserver config) not found, creating from default...")
+            conf = dofile("httpserver-confmakedefault.lc")
+            dofile("httpserver-confwrite.lc")(conf, "httpserver-conf.lua")
+            dofile("compile.lc")("httpserver-conf.lua")
+        end
+        file.close()
+
 
         local conf = dofile("httpserver-conf.lc")
         local auth
@@ -144,6 +164,8 @@ return function (conn)
             auth = dofile("httpserver-basicauth.lc")
             user = auth.authenticate(payload, conf) -- authenticate returns nil on failed auth
         end
+
+
 
         if user and req.methodIsValid and (req.method == "GET" or req.method == "POST" or req.method == "PUT") then
             onRequest(connection, req)
