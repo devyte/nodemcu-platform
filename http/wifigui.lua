@@ -5,12 +5,9 @@ return function (connection, req, args)
  
 
     if req.method == "GET" then
-print("wifigui: GET")
         dofile("http/wifigui-form.lc")(req.method, connection, wifiConfig)
-print("wifigui: GET done")
         collectgarbage()
     elseif req.method == "POST" then      
-print("wifigui: POST")
         local rd = req.getRequestData()
         local badvalues = dofile("http/wifigui-validate.lc")(rd)
         collectgarbage()
@@ -72,11 +69,9 @@ print("wifigui: POST")
         else
             dofile("http/wifigui-form.lc")(req.method, connection, wifiConfig, rd, badvalues)
         end
-print("wifigui: POST end")
     else
         connection:send("NOT IMPLEMENTED")
     end
-
    
     collectgarbage()
 end
