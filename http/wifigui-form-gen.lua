@@ -18,7 +18,6 @@ return function (util, connection, wifiConfig, valuetable, badvalues)
     getInputTypeRadioString("wifiConfig.phymode", "wifi.PHYMODE_B", getRadioChecked(phymode, wifi.PHYMODE_B), "802.11b"),
     '<br>\r\n'})
 
-    print("ftable=\n"..ftable)
     collectgarbage()
     connection:send(ftable)
 end
