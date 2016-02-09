@@ -21,44 +21,14 @@ return function (connection, req, args)
                 --merge values into the wifiConfig
                 tmr.wdclr()
                 for name, value in pairs(rd) do
-                    local str = "return function(wifiConfig) "..name.."="..value.." end"
-                    local f = loadstring(str)()
-                    assert(f, "f is nil")
+                    local f = loadstring("return function(wifiConfig) "..name.."="..value.." end")()
                     f(wifiConfig)
-                    str = nil
                     f = nil
                     collectgarbage()
                 end
-                --write out the config & compile
-                dofile("wifi-confwrite.lc")(wifiConfig, "wifi-conf-tmp.lua")
-                collectgarbage()
-                dofile("compile.lc")("wifi-conf-tmp.lua")
-                if file.open("wifi-conf.lc") then
-                    --file existed, so play it safe
-                    file.close()
-                    file.remove("wifi-conf.lc.bak")
-                    if not file.rename("wifi-conf.lc", "wifi-conf.lc.bak") then
-                        print("wifigui error: can't backup wifi-conf.lc")
-                        connection:send("wifigui error: can't backup wifi-conf.lc")
-                        collectgarbage()
-                        return
-                    end
-                    if not file.rename("wifi-conf-tmp.lc", "wifi-conf.lc") then
-                        print("wifigui error: can't save config to wifi-conf.lc")
-                        connection:send("wifigui error: can't save config to wifi-conf.lc")
-                        collectgarbage()
-                        return
-                    end
-                    file.remove("wifi-conf.lc.bak")
-                else
-                    --new config, shouldn't happen, but...
-                    if not file.rename("wifi-conf-tmp.lc","wifi-conf.lc") then
-                        print("wifigui error: can't save config to wifi-conf.lc")
-                        connection:send("wifigui error: can't save config to wifi-conf.lc")
-                        collectgarbage()
-                        return                    
-                    end
-                end
+                --write out the config, compile, apply config
+                dofile("wifi-confwrite.lc")(wifiConfig, "wifi-conf.lua")
+                dofile("compile.lc")("wifi-conf.lua")
                 dofile("wifi.lc")
                 collectgarbage()
             end
