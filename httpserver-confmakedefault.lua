@@ -5,6 +5,6 @@ conf.auth = {}
 conf.auth.enabled = true
 conf.auth.realm = "ESP-"..node.chipid().." httpserver" -- displayed in the login dialog users get
 conf.auth.user = "develo"
-conf.auth.password = "lapelotaesmia" -- PLEASE change this
+conf.auth.password = "theballismine" -- PLEASE change this
 
 return conf
