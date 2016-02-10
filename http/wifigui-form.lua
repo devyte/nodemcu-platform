@@ -1,12 +1,11 @@
 return function (method, connection, wifiConfig, valuetable, badvalues)
     local util = dofile("http/wifigui-form-util.lc")
-    
-    connection:send(table.concat({"HTTP/1.0 200 OK\r\nContent-Type: text/html\r\nCache-Control: private, no-store\r\n\r\n",
-    '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Wifi Configuration</title></head>\n',
-    '<body>',
-    '<h1>Wifi Configuration</h1>\n'
-    }))
-   
+
+    connection:send('HTTP/1.0 200 OK\r\nContent-Type: text/html\r\nCache-Control: private, no-store\r\n\r\n')
+    connection:send('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Wifi Configuration</title></head>\n')
+    connection:send('<body>')
+    connection:send('<h1>Wifi Configuration</h1>\n')
+
     if badvalues and next(badvalues) ~= nil then
         connection:send('<h2 style="color:#FF0000">Invalid values submitted</h2>\r\n')
     end

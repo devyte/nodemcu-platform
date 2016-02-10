@@ -12,23 +12,19 @@ return function (util, connection, wifiConfig, valuetable, badvalues)
     local gateway = "wifiConfig.accessPointIpConfig.gateway"
     local mac     = "wifiConfig.accessPointIpConfig.mac"
     local start   = "wifiConfig.accessPointDHCPConfig.start"
+
+    connection:send('<h2>Access Point Network</h2>\n')
+    connection:send('<table>\n')
+    connection:send(getInputTypeTextString('IP Address:',     wifiConfig.accessPointIpConfig.ip,      ip,      getTextFilledValue(ip,       valuetable), getTextColor(ip,       badvalues)))
+    connection:send(getInputTypeTextString('Network mask:',   wifiConfig.accessPointIpConfig.netmask, netmask, getTextFilledValue(netmask,  valuetable), getTextColor(netmask,  badvalues)))
+    connection:send(getInputTypeTextString('Gateway:',        wifiConfig.accessPointIpConfig.gateway, gateway, getTextFilledValue(gateway,  valuetable), getTextColor(gateway,  badvalues)))
+    connection:send(getInputTypeTextString('MAC:',            wifiConfig.accessPointIpConfig.mac,     mac,     getTextFilledValue(mac,      valuetable), getTextColor(mac,      badvalues)))
+    connection:send('</table><br>\n')
+    connection:send('DHCP Server:<br>\n')
+    connection:send(getInputTypeRadioString("wifiConfig.accessPointDHCPConfig.enabled", "1", getRadioChecked(enabled, 1), "Enabled"))
+    connection:send(getInputTypeRadioString("wifiConfig.accessPointDHCPConfig.enabled", "0", getRadioChecked(enabled, 0), "Disabled"))
+    connection:send('<table>\n')
+    connection:send(getInputTypeTextString('DHCP pool start:', wifiConfig.accessPointDHCPConfig.start, start,   getTextFilledValue(start,    valuetable), getTextColor(start,    badvalues)))
+    connection:send('</table><br>\n')
     
-    local ftable = table.concat({
-    '<h2>Access Point Network</h2>\n',
-    '<table>\n',
-    getInputTypeTextString('IP Address:   ',    wifiConfig.accessPointIpConfig.ip,      ip,      getTextFilledValue(ip,       valuetable), getTextColor(ip,       badvalues)),
-    getInputTypeTextString('Network mask: ',    wifiConfig.accessPointIpConfig.netmask, netmask, getTextFilledValue(netmask,  valuetable), getTextColor(netmask,  badvalues)),
-    getInputTypeTextString('Gateway:      ',    wifiConfig.accessPointIpConfig.gateway, gateway, getTextFilledValue(gateway,  valuetable), getTextColor(gateway,  badvalues)),
-    getInputTypeTextString('MAC:          ',    wifiConfig.accessPointIpConfig.mac,     mac,     getTextFilledValue(mac,      valuetable), getTextColor(mac,      badvalues)),
-    '</table><br>\n',
-    'DHCP Server:<br>\n',
-    getInputTypeRadioString("wifiConfig.accessPointDHCPConfig.enabled", "1", getRadioChecked(enabled, 1), "Enabled"),
-    getInputTypeRadioString("wifiConfig.accessPointDHCPConfig.enabled", "0", getRadioChecked(enabled, 0), "Disabled"),
-    '<table>\n',
-    getInputTypeTextString('DHCP pool start: ', wifiConfig.accessPointDHCPConfig.start, start,   getTextFilledValue(start,    valuetable), getTextColor(start,    badvalues)),
-    '</table><br>\n',
-    })
-    
-    collectgarbage()
-    connection:send(ftable)
 end

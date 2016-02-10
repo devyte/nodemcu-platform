@@ -9,19 +9,14 @@ return function (util, connection, wifiConfig, valuetable, badvalues)
     local auto = getRadioValue("wifiConfig.stationPointConfig.auto", valuetable) or wifiConfig.stationPointConfig.auto
     local ssid  = "wifiConfig.stationPointConfig.ssid"
     local pwd   = "wifiConfig.stationPointConfig.pwd"
-    
-    local ftable = table.concat({
-    '<h2>Station</h2>\n',
-    '<table>\n',
-    getInputTypeTextString('Wifi Name (SSID): ', wifiConfig.stationPointConfig.ssid, ssid, getTextFilledValue(ssid,  valuetable), getTextColor(ssid,  badvalues)),
-    getInputTypeTextString('Password:  ',        wifiConfig.stationPointConfig.pwd,  pwd,  getTextFilledValue(pwd,   valuetable), getTextColor(pwd,   badvalues)),
-    '</table><br>\r\n',
-    'Auto Connect:<br>\r\n',
-    getInputTypeRadioString("wifiConfig.stationPointConfig.auto", "1", getRadioChecked(auto, 1), "Enabled"),
-    getInputTypeRadioString("wifiConfig.stationPointConfig.auto", "0", getRadioChecked(auto, 0), "Disabled"),
-    '<br>\n'
-    })
 
-    collectgarbage()
-    connection:send(ftable)
+    connection:send('<h2>Station</h2>\n')
+    connection:send('<table>\n')
+    connection:send(getInputTypeTextString('Wifi Name (SSID):', wifiConfig.stationPointConfig.ssid, ssid, getTextFilledValue(ssid,  valuetable), getTextColor(ssid,  badvalues)))
+    connection:send(getInputTypeTextString('Password:',         wifiConfig.stationPointConfig.pwd,  pwd,  getTextFilledValue(pwd,   valuetable), getTextColor(pwd,   badvalues)))
+    connection:send('</table><br>\n')
+    connection:send('Auto Connect:<br>\n')
+    connection:send(getInputTypeRadioString("wifiConfig.stationPointConfig.auto", "1", getRadioChecked(auto, 1), "Enabled"))
+    connection:send(getInputTypeRadioString("wifiConfig.stationPointConfig.auto", "0", getRadioChecked(auto, 0), "Disabled"))
+    connection:send('<br>\n')
 end

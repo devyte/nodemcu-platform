@@ -33,7 +33,7 @@ function formutils.getInputTypeRadioString(name, value, checked, label )
 end
 
 function formutils.getInputTypeTextString(label, labelvalue, name, value, color)
-    return table.concat({'<tr>\n<td>',label, '</td><td>', labelvalue, '</td><td><input type="text" name="', name, '"', value, color, '></td>\n</tr>\n'})
+    return table.concat({'<tr>\n<td>', label, '</td><td>', labelvalue, '</td><td><input type="text" name="', name, '"', value, color, '></td>\n</tr>\n'})
 end
 
 return formutils
