@@ -23,7 +23,7 @@ return function (util, connection, wifiConfig, valuetable, badvalues)
     connection:send('DHCP Server:<br>\n')
     connection:send(getInputTypeRadioString("wifiConfig.accessPointDHCPConfig.enabled", "1", getRadioChecked(enabled, 1), "Enabled"))
     connection:send(getInputTypeRadioString("wifiConfig.accessPointDHCPConfig.enabled", "0", getRadioChecked(enabled, 0), "Disabled"))
-    connection:send('<table>\n')
+    connection:send('<br><table>\n')
     connection:send(getInputTypeTextString('DHCP pool start:', wifiConfig.accessPointDHCPConfig.start, start,   getTextFilledValue(start,    valuetable), getTextColor(start,    badvalues)))
     connection:send('</table><br>\n')
     

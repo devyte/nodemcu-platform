@@ -59,21 +59,25 @@ return function(wifiConfig,wificonflua)
     --play it safe: backup the curr config
     local wificonfluabak =  wificonflua..".bak" 
     file.remove(wificonfluabak)
-    file.rename(wificonflua, wificonfluabak)
+    if not file.rename(wificonflua, wificonfluabak) then
+        print("wifi-confwrite error: unable to back up "..wificonflua)
+        collectgarbage()
+        return false
+    end
 
     --rename the new config stored in the tmp file to the user config
-    local ret = true
     if not file.rename(wificonfluatmp, wificonflua) then
         -- failed, so restore backup, cleanup and bail out
         file.rename(wificonfluabak, wificonflua)
         file.remove(wificonfluatmp)
-        print("wifi-confwrite error: Unable to save to file "..wificonflua)
-        ret = false
+        print("wifi-confwrite error: unable to save to file "..wificonflua)
+        collectgarbage()
+        return false
     else
         --save went ok, so remove backup
         file.remove(wificonfluabak)
     end
     
     collectgarbage()
-    return ret
+    return true
 end
