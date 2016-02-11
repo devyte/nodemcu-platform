@@ -1,10 +1,10 @@
-local conf = {}
+local httpservConfig = {}
 
 -- Basic Authentication Conf
-conf.auth = {}
-conf.auth.enabled = true
-conf.auth.realm = "ESP-"..node.chipid().." httpserver" -- displayed in the login dialog users get
-conf.auth.user = "develo"
-conf.auth.password = "theballismine" -- PLEASE change this
+httpservConfig.auth = {}
+httpservConfig.auth.enabled = true
+httpservConfig.auth.realm = "ESP-"..node.chipid().." httpserver" -- displayed in the login dialog users get
+httpservConfig.auth.user = "develo"
+httpservConfig.auth.password = "theballismine" -- PLEASE change this
 
-return conf
+return httpservConfig

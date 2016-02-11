@@ -94,7 +94,9 @@ function tools.mv2http()
           "underconstruction.gif",
           "zipped.html.gz",
           "apple.*png",
-          "wifigui.*"
+          "wifigui.*",
+          "httpgui.*",
+          "form.*"
           }
 
      for i,f in ipairs(filelist) do
