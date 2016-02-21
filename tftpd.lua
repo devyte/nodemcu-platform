@@ -103,12 +103,11 @@ return function(port)
         if(op==1) then
             --RRQ
             uart.write(0,"TFTP RRQ '".._fn.."': ")
-            if(file.open(_fn, "r")==nil) then
+            if(not file.exists(_fn)) then
                 c:send("\0\5\0\1\0") --Error: 1=file not found
                 reset()
                 return
             end
-            file.close()
             sendblk(c)
         elseif(op==2) then
             --WRQ

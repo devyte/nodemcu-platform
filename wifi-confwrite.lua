@@ -59,11 +59,7 @@ return function(wifiConfig,wificonflua)
     --play it safe: backup the curr config
     local wificonfluabak =  wificonflua..".bak" 
     file.remove(wificonfluabak)
-    if not file.rename(wificonflua, wificonfluabak) then
-        print("wifi-confwrite error: unable to back up "..wificonflua)
-        collectgarbage()
-        return false
-    end
+    file.rename(wificonflua, wificonfluabak)
 
     --rename the new config stored in the tmp file to the user config
     if not file.rename(wificonfluatmp, wificonflua) then

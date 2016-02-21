@@ -1,18 +1,19 @@
-local function sendHeader(connection)
-   connection:send("HTTP/1.0 200 OK\r\nContent-Type: text/html\r\nCache-Control: private, no-store\r\n\r\n")
+--local function sendHeader(connection)
+   --connection:send("HTTP/1.0 200 OK\r\nContent-Type: text/html\r\nCache-Control: private, no-store\r\n\r\n")
 
-end
+--end
 
 local function sendAttr(connection, attr, val)
    if val then
-       connection:send("<li><b>".. attr .. ":</b> " .. val .. "<br></li>\n")
+       connection:send("<tr><td><b>".. attr .. ":</b></td><td>" .. val .. "</td></tr>\n")
    end
 end
 
 return function (connection, req, args)
     collectgarbage()
-    sendHeader(connection)
-    connection:send('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Node info</title></head><body><h1>Node info</h1><ul>')
+    --sendHeader(connection)
+    dofile("httpserver-header.lc")(connection, 200, "html")
+    connection:send('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Node info</title></head><body><h1>Node info</h1><table>')
     local majorVer, minorVer, devVer, chipid, flashid, flashsize, flashmode, flashspeed = node.info();
     sendAttr(connection, "NodeMCU version"          , majorVer.."."..minorVer.."."..devVer)
     sendAttr(connection, "Chip id"                  , chipid)
@@ -49,5 +50,5 @@ return function (connection, req, args)
     end
     sendAttr(connection, 'Station MAC'              , wifi.sta.getmac())
 
-    connection:send('</ul></body></html>')
+    connection:send('</table></body></html>')
 end

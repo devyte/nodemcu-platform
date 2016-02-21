@@ -1,26 +1,8 @@
 -- Begin WiFi configuration
 
 --check if default config file exists, if not create it (should only happen the 1st time run after a format)
-local wifiConfig = {}
-if file.open("wifi-conf-default.lc", "r") == nil then
-    print("wifi-conf-default.lc (default wifi config) not found, creating...")
-    wifiConfig = dofile("wifi-confmakedefault.lc")
-    dofile("wifi-confwrite.lc")(wifiConfig, "wifi-conf-default.lua")
-    dofile("compile.lc")("wifi-conf-default.lua")
-end
-file.close()
+local wifiConfig = dofile("confload.lc")("wifi-conf.lc")
 
---check if the user config file exists, if not save the default config to it
-if file.open("wifi-conf.lc", "r") == nil then
-    print("wifi-conf.lc (user wifi config) not found, creating from default...")
-    wifiConfig = dofile("wifi-confmakedefault.lc")
-    dofile("wifi-confwrite.lc")(wifiConfig, "wifi-conf.lua")
-    dofile("compile.lc")("wifi-conf.lua")
-end
-file.close()
-
--- Load the config
-wifiConfig = dofile("wifi-conf.lc")
 
 
 wifi.setphymode = wifiConfig.phymode

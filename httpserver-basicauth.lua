@@ -16,9 +16,10 @@ function basicAuth.authenticate(header, conf)
    local credentials = dofile("httpserver-b64decode.lc")(credentials_enc)
    local user, pwd = credentials:match("^(.*):(.*)$")
    if user ~= conf.auth.user or pwd ~= conf.auth.password then
+      print("httpserver-basicauth: User \"" .. user .. "\": Access denied.")
       return nil
    end
-   print("httpserver-basicauth: User \"" .. user .. "\" authenticated.")
+   print("httpserver-basicauth: User \"" .. user .. "\": Authenticated.")
    return user
 end
 

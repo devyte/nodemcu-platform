@@ -4,8 +4,7 @@
 
 return function(filename)
     local function compileAndRemoveIfNeeded(f)
-        if file.open(f) then
-            file.close()
+        if file.exists(f) then
             print('Compiling:', f)
             tmr.wdclr()
             node.compile(f)

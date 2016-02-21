@@ -46,5 +46,5 @@ return function(connarg)
         print("Welcome to NodeMcu world.")
     end
 
-    return detect, install, onReceive
+    return {detect = detect, install = install, onReceive = onReceive}
 end

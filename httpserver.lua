@@ -21,49 +21,80 @@ return function (conn)
         local bufferedConnection = {}
         function bufferedConnection:flush() 
             if self.size > 0 then 
+--uart.write(0, "httpserver: buff:flush(): size="..self.size.."\n")
                 connection:send(table.concat(self.data, ""))
                 self.data = {}
-                self.size = 0    
+                self.size = 0
+                collectgarbage()
                 return true
             end
             return false
         end
+        
         function bufferedConnection:send(payload) 
-            local l = payload:len()
-            if l + self.size > 1000 then
+            local flushthreshold = 1400
+
+
+            local newsize = self.size + payload:len()
+            while newsize > flushthreshold do
+                --STEP1: cut out piece from payload to complete threshold bytes in table
+                local piecesize = flushthreshold - self.size
+                local piece = payload:sub(1, piecesize)
+                payload = payload:sub(piecesize + 1, -1)
+                --STEP2: insert piece into table
+                table.insert(self.data, piece)
+                self.size = self.size + piecesize --size should be same as flushthreshold
+                --STEP3: flush entire table
                 if self:flush() then
-                    coroutine.yield()          
+                    coroutine.yield()
                 end
+                --at this point, size should be 0, because the table was just flushed
+                newsize = self.size + payload:len()
             end
-            if l > 800 then
-                connection:send(payload)
-                coroutine.yield()
-            else
+            
+            --at this point, whatever is left in payload should be <= flushthreshold
+            local plen = payload:len()
+            if plen == flushthreshold then
+                --case 1: what is left in payload is exactly flushthreshold bytes (boundary case), so flush it
                 table.insert(self.data, payload)
-                self.size = self.size + l
+                self.size = self.size + plen
+                if self:flush() then
+                    coroutine.yield()
+                end
+            elseif payload:len() then
+                --case 2: what is left in payload is less than flushthreshold, so just leave it in the table
+                table.insert(self.data, payload)
+                self.size = self.size + plen
+            --else, case 3: nothing left in payload, so do nothing
             end
         end
+
         bufferedConnection.size = 0
         bufferedConnection.data = {}
 
         connectionThread = coroutine.create(
             function(fileServeFunction, bconnection, req, args)
+--uart.write(0, "httpserver: coroutine(): about to fileServeFunction \n")
                 fileServeFunction(bconnection, req, args)
                 if not bconnection:flush() then
                     connection:close()
                     connectionThread = nil
                 end
+--uart.write(0, "httpserver: coroutine(): end\n")
             end
         )
 
         local status, err = coroutine.resume(connectionThread, fileServeFunction, bufferedConnection, req, args)
         if not status then
-            print(err)
+            print("Error: "..err)
         end
         collectgarbage()
     end
 
+
     local function onRequest(connection, req)
+--uart.write(0, "httpserver: onRequest()\n")
+    
         collectgarbage()
         local method = req.method
         local uri = req.uri
@@ -76,16 +107,14 @@ return function (conn)
             uri.args = {code = 400, errorString = "Bad Request"}
             fileServeFunction = dofile("httpserver-error.lc")
         else
-            local fileExists = file.open(uri.file, "r")
-            file.close()
+            local fileExists = file.exists(uri.file)
 
             if not fileExists then
                 -- gzip check
-                fileExists = file.open(uri.file .. ".gz", "r")
-                file.close()
+                fileExists = file.exists(uri.file .. ".gz")
 
                 if fileExists then
-                    print("gzip variant exists, serving that one")
+--                    print("gzip variant exists, serving that one")
                     uri.file = uri.file .. ".gz"
                     uri.isGzipped = true
                 end
@@ -107,15 +136,20 @@ return function (conn)
                 end
             end
         end
+--uart.write(0, "httpserver: onRequest(): about to start serving\n")
+        
         startServing(fileServeFunction, connection, req, uri.args)
+--uart.write(0, "httpserver: onRequest() end\n")
+        
     end
 
     local tmp_payload = nil
     local bBodyMissing = nil
 
+
     local function onReceive(connection, payload)
         collectgarbage()
-
+--uart.write(0, "httpserver: onReceive()\n")
 -- collect data packets until the size of http body meets the Content-Length stated in header
         if payload:find("Content%-Length:") or bBodyMissing then
             if tmp_payload then 
@@ -127,33 +161,14 @@ return function (conn)
                 bBodyMissing = true
                 return
             else
-                print("HTTP packet assembled! size: "..#tmp_payload)
+                --print("HTTP packet assembled! size: "..#tmp_payload)
                 payload = tmp_payload
                 tmp_payload, bBodyMissing = nil    
             end
         end
 
     
-        local conf = {}
-        if file.open("httpserver-conf-default.lc", "r") == nil then
-            print("httpserver-conf-default.lc (default wifi config) not found, creating...")
-            conf = dofile("httpserver-confmakedefault.lc")
-            dofile("httpserver-confwrite.lc")(conf, "httpserver-conf-default.lua")
-            dofile("compile.lc")("httpserver-conf-default.lua")
-        end
-        file.close()
-        
-        --check if the user config file exists, if not save the default config to it
-        if file.open("httpserver-conf.lc", "r") == nil then
-            print("httpserver-conf.lc (user httpserver config) not found, creating from default...")
-            conf = dofile("httpserver-confmakedefault.lc")
-            dofile("httpserver-confwrite.lc")(conf, "httpserver-conf.lua")
-            dofile("compile.lc")("httpserver-conf.lua")
-        end
-        file.close()
-
-
-        local conf = dofile("httpserver-conf.lc")
+        local conf = dofile("confload.lc")("httpserver-conf.lc")
         local auth
         local user = "Anonymous"
 
@@ -181,17 +196,20 @@ return function (conn)
             end
             startServing(fileServeFunction, connection, req, args)
         end
+--uart.write(0, "httpserver: onReceive() end\n")
     end
 
     local function onSent(connection, payload)
+--uart.write(0, "httpserver: onSent()\n")
         collectgarbage()
         if connectionThread then
             local connectionThreadStatus = coroutine.status(connectionThread) 
             if connectionThreadStatus == "suspended" then
                 -- Not finished sending file, resume.
+--uart.write(0, "httpserver: onSent(): about to resume coroutine\n")
                 local status, err = coroutine.resume(connectionThread)
                 if not status then
-                    print(err)
+                    print("Error: "..err)
                 end
             elseif connectionThreadStatus == "dead" then
                 -- We're done sending file.
@@ -199,12 +217,20 @@ return function (conn)
                 connectionThread = nil
             end
         end
+--uart.write(0, "httpserver: onSent() end\n")
+        
     end
     
     local function install(connection)
         connection:on("receive", onReceive)
         connection:on("sent", onSent)
+        connection:on("disconnection",function(c)
+            if connectionThread then
+                connectionThread = nil
+                collectgarbage()
+            end
+        end) 
     end
     
-    return detect, install, onReceive
+    return {detect = detect, install = install, onReceive = onReceive}
 end

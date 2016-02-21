@@ -58,8 +58,7 @@ function tools.mv(regex, dest)
                 diridx = string.find(k, "/")
                 if(diridx ~= nil) then
                     local destname = string.sub(k, diridx+1, -1)
-                    if(file.open(destname) ~= nil) then
-                        file.close(destname)
+                    if(file.exists(destname)) then
                         file.remove(destname)
                     end
                     local ret = file.rename(k, destname)
@@ -71,8 +70,7 @@ function tools.mv(regex, dest)
         for k,v in pairs(file_list) do
             if(string.match(k, regex) ~= nil) then
                 local destname = dest.."/"..k
-                if(file.open(destname) ~= nil) then
-                    file.close(destname)
+                if(file.exists(destname)) then
                     file.remove(destname)
                 end
                 local ret = file.rename(k, destname)
@@ -131,7 +129,6 @@ end
 function tools.more(fn)
     if file.open(fn, "r") == nil then
         print("Can't open file "..fn)
-        file.close()
         return
     end
 
