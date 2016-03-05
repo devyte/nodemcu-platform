@@ -5,11 +5,11 @@ local wifiConfig = dofile("confload.lc")("wifi-conf.lc")
 
 
 
-wifi.setphymode = wifiConfig.phymode
+wifi.setphymode(wifiConfig.phymode)
 
 -- Tell the chip to connect to the access point
 wifi.setmode(wifiConfig.mode)
-local wifimode2str = {[wifi.STATION]="wifi.STATION", [wifi.SOFTAP]="wifi.SOFTAP", [wifi.STATIONAP]="wifi.STATIONAP"}
+local wifimode2str = {[wifi.STATION]="wifi.STATION", [wifi.SOFTAP]="wifi.SOFTAP", [wifi.STATIONAP]="wifi.STATIONAP", [wifi.NULLMODE]="wifi.NULLMODE"}
 print('wifi mode set to '..wifimode2str[wifi.getmode()])
 wifimode2str = nil
 
@@ -51,10 +51,11 @@ if (wifi.getmode() == wifi.STATION) or (wifi.getmode() == wifi.STATIONAP) then
           else
              print('IP: ',ip)
           end
-          tmr.stop(0)
           joinCounter = nil
           joinMaxAttempts = nil
+          tmr.unregister(0)
           collectgarbage()
        end
+       ip = nil
     end)
 end

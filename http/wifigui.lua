@@ -1,4 +1,5 @@
 return function (connection, req, args)
+--print("wifigui.lc heap="..node.heap())
     local wifiConfig = dofile("wifi-conf.lc")
     collectgarbage()
     assert(wifiConfig ~= nil, "wifiConfig is nil")
@@ -29,13 +30,17 @@ return function (connection, req, args)
                 --write out the config, compile, apply config
                 dofile("wifi-confwrite.lc")(wifiConfig, "wifi-conf.lua")
                 dofile("compile.lc")("wifi-conf.lua")
+                --serve the form again (has to be done before wigi.lc, or connection could be due to wifi reset
+                dofile("http/wifigui-form.lc")(req.method, connection, wifiConfig)
+                --wifi reset
+                connection:close() --need to close connection 1st, or memleak, but no more sends after!
                 dofile("wifi.lc")
                 collectgarbage()
+            else
+                --serve the form again
+                dofile("http/wifigui-form.lc")(req.method, connection, wifiConfig)
+                collectgarbage()
             end
-            
-            --serve the form again
-            dofile("http/wifigui-form.lc")(req.method, connection, wifiConfig)
-            collectgarbage()
         else
             dofile("http/wifigui-form.lc")(req.method, connection, wifiConfig, rd, badvalues)
         end
@@ -44,4 +49,5 @@ return function (connection, req, args)
     end
    
     collectgarbage()
+--print("wifigui.lc end heap="..node.heap())
 end

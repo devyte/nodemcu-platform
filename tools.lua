@@ -94,7 +94,8 @@ function tools.mv2http()
           "apple.*png",
           "wifigui.*",
           "httpgui.*",
-          "form.*"
+          "form.*",
+          "favicon.ico"
           }
 
      for i,f in ipairs(filelist) do
@@ -121,8 +122,9 @@ function tools.ll(regex)
     end
     table.sort(sorted_file_list)
     
-    for i,n in ipairs(sorted_file_list) do 
-        print(string.format("%-31s %7s", n, file_list[n]))
+    for i,n in ipairs(sorted_file_list) do
+        tmr.wdclr()
+        print(string.format("%-32s %7s", n, file_list[n]))
     end
 end
     

@@ -8,7 +8,10 @@ return function (connection, code, extension, gzip)
       local codez = {[200]="OK", [400]="Bad Request", [404]="Not Found",}
       local myResult = codez[code] --
       -- enforce returning valid http codes all the way throughout?
-      if myResult then return myResult else return "Not Implemented" end
+      if myResult then 
+        return myResult
+      end
+      return "Not Implemented"
    end
 
    local function getMimeType(ext)
