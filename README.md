@@ -26,16 +26,48 @@ Aka telnet server in the nodemcu examples, but rewritten as a module for the tcp
 Allows easy upload of files over the network (as opposed to the serial port). Joint work with Rene van der Zee.
 
 ### Webpage front-end
-A wifi gui to configure all wifi parameters, a garage door opener app (original example by Marcos Kirsch), other example webpages.
+
+  - A wifi GUI to configure all wifi parameters.
+  - A garage door opener app (original example by Marcos Kirsch).
+  - Other example webpages.
 
 ## Installation
-  1. Flash nodemcu firmware
-  2. file.format()
-  3. Upload all files in this repo (except maybe the README) using ESPlorer or similar, including those in the http dir (don't worry about the dir name)
+  1. [Flash nodemcu firmware](https://nodemcu.readthedocs.io/en/dev/en/flash/)
+  2. Clear the filesystem: `file.format()`
+  3. Upload all files in this repo (except maybe the README) using ESPlorer or similar, including those in the `http` directory (don't worry about the dir name, the `init.lua` triggers these files to be renamed to `http/*` on the flash)
   4. Reboot nodemcu
-  5. Connect to ESP-someid wifi hotspot
+  5. Connect to ESP-someid wifi hotspot and visit <http://192.168.111.1>
   6. Follow Wifi Configuration, edit wifi parameters to your liking, Submit
- 
+
+### Default credentials and where to change them
+
+Out of the box, the platform sets up the following resources and credentials that you will likely want to change after you try out a test run:
+
+#### A WiFi access point – `wifi-confmakedefault.lua`
+
+  - SSID: `ESP-<chip ID>`
+  - Password: `theballismine`
+  - Gateway IP: 192.168.111.1
+
+#### WiFi station joining – `wifi-confmakedefault.lua`
+
+Joining an existing WiFi network. This can be changed from the web UI, but you likely want a default for your project development.
+
+  - SSID: `devnet`
+  - Password: `theballismine`
+
+#### Web UI for WiFi configuration – `httpserver-confmakedefault.lua`
+
+  - <http://192.168.111.1>
+  - Basic Auth username: `develo`
+  - Basic Auth password: `theballismine`
+
+#### luaserver, the NodeMCU Lua REPL over telnet
+
+    $ telnet 192.168.111.1 80
+
+Send a carriage return or line feed as the first input after connecting. The `tcpserver` interprets this as a request for the `luaserver` instead of the `httpserver`. You should see a welcome message and prompt.
+
 ## Application development guidelines
 The idea behind this platform is to allow focus on the development of your own application, and reduce your worrying about things like wifi setup, compiling lua, or remote communication.
 Some comments and guidelines:
@@ -50,5 +82,5 @@ Some comments and guidelines:
 ## Planned work
   1. Websocket server module, to run alongside the httpserver module
   2. Modbus server module
-  3. Additional webguis
+  3. Additional web UIs
  
