@@ -16,14 +16,14 @@ wifiConfig.accessPointConfig.max = 4 -- max clients: 1-4
 wifiConfig.accessPointConfig.beacon = 100 -- beacon interval 100-60000
 
 wifiConfig.accessPointIpConfig = {}
-wifiConfig.accessPointIpConfig.ip = "192.168.111.1"
+wifiConfig.accessPointIpConfig.ip = "192.168.4.1"
 wifiConfig.accessPointIpConfig.netmask = "255.255.255.0"
-wifiConfig.accessPointIpConfig.gateway = "192.168.111.1"
+wifiConfig.accessPointIpConfig.gateway = "192.168.4.1"
 wifiConfig.accessPointIpConfig.mac = wifi.ap.getmac() -------------------- wifi.ap.setmac()
 
 wifiConfig.accessPointDHCPConfig = {}
 wifiConfig.accessPointDHCPConfig.enabled = 1 -------------------------wifi.ap.dhcp.start()/stop()
-wifiConfig.accessPointDHCPConfig.start = "192.168.111.100"
+wifiConfig.accessPointDHCPConfig.start = "192.168.4.100"
 
 wifiConfig.stationPointConfig = {}
 wifiConfig.stationPointConfig.ssid = "devnet"        -- Name of the WiFi network you want to join

@@ -36,7 +36,7 @@ Allows easy upload of files over the network (as opposed to the serial port). Jo
   2. Clear the filesystem: `file.format()`
   3. Upload all files in this repo (except maybe the README) using ESPlorer or similar, including those in the `http` directory (don't worry about the dir name, the `init.lua` triggers these files to be renamed to `http/*` on the flash)
   4. Reboot nodemcu
-  5. Connect to ESP-someid wifi hotspot and visit <http://192.168.111.1>
+  5. Connect to ESP-someid wifi hotspot and visit <http://192.168.4.1>
   6. Follow Wifi Configuration, edit wifi parameters to your liking, Submit
 
 ### Default credentials and where to change them
@@ -47,7 +47,7 @@ Out of the box, the platform sets up the following resources and credentials tha
 
   - SSID: `ESP-<chip ID>`
   - Password: `theballismine`
-  - Gateway IP: 192.168.111.1
+  - Gateway IP: 192.168.4.1
 
 #### WiFi station joining – `wifi-confmakedefault.lua`
 
@@ -58,13 +58,13 @@ Joining an existing WiFi network. This can be changed from the web UI, but you l
 
 #### Web UI for WiFi configuration – `httpserver-confmakedefault.lua`
 
-  - <http://192.168.111.1>
+  - <http://192.168.4.1>
   - Basic Auth username: `develo`
   - Basic Auth password: `theballismine`
 
 #### luaserver, the NodeMCU Lua REPL over telnet
 
-    $ telnet 192.168.111.1 80
+    $ telnet 192.168.4.1 80
 
 Send a carriage return or line feed as the first input after connecting. The `tcpserver` interprets this as a request for the `luaserver` instead of the `httpserver`. You should see a welcome message and prompt.
 
