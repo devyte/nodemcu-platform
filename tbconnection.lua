@@ -51,7 +51,8 @@ return function(connectionArg, keepconnectionArg)
 
 
     local connectionThread = nil
-    local onDisconnectionUserCallback = nil
+    local onDisconnectionUserCallback = nil --called when connection gets dropped 
+    local onSentUserCallback = nil --called when functionArg is done sending (i.e.: returns in coroutine). Call is done via node.task.post, so callback executes in main thread instead of coroutine.
 
     -- clean up closure context
     local function cleanup()
@@ -61,6 +62,7 @@ return function(connectionArg, keepconnectionArg)
         end
         connectionThread = nil
         onDisconnectionUserCallback = nil
+        onSentUserCallback = nil
         collectgarbage()    
     end
 
@@ -138,7 +140,11 @@ return function(connectionArg, keepconnectionArg)
                 bconn:flush()
                 bconn = nil
                 collectgarbage()
+                if onSentUserCallback then
+                    node.task.post(node.task.MEDIUM_PRIORITY, onSentUserCallback)
+                end
                 cleanup()
+                collectgarbage()
             end
         )
 
@@ -148,10 +154,20 @@ return function(connectionArg, keepconnectionArg)
             print("Error: ", err)
         end
     end
- 
+
     function threadedBufferedConnection:close()
         connection:close()
         cleanup()
+    end
+
+    function threadedBufferedConnection:on(event, callback)
+        if event == "disconnection" then
+            onDisconnectionUserCallback = callback
+        elseif event == "sent" then
+            onSentUserCallback = callback
+        else
+            error("Error: unknown event: "..event)
+        end
     end
 
     local function onDisconnection(conn)

@@ -15,12 +15,12 @@ return function (connection, payload)
     end
 
     local req = dofile("httpserver-request.lc")(payload)
-    print(req.method .. ": " .. req.request)
 
     local serveFunction = nil
     local methodIsAllowed = {GET=true, POST=true, PUT=true}
 
     if user and req.methodIsValid and methodIsAllowed[req.method] and #(req.uri.file) <= 31 then
+        print(req.method .. ": " .. req.request)
         local uri = req.uri
 
         local fileExists = file.exists(uri.file)

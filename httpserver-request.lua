@@ -105,19 +105,20 @@ end
 -- Parses the client's request. Returns a dictionary containing pretty much everything
 -- the server needs to know about the uri.
 return function (request)
-   local e = request:find("\r\n", 1, true)
-   if not e then 
-     print("httpserver-request.lc: nil e")
-     return nil 
-   end
-   local line = request:sub(1, e - 1)
-   local r = {}
-   local _ = {}
-   local i = {}
-   _, i, r.method, r.request = line:find("^([A-Z]+) (.-) HTTP/[1-9]+.[0-9]+$")
-   r.methodIsValid = validateMethod(r.method)
-   r.uri = parseUri(r.request)
-   r.getRequestData = getRequestData(request)
-   collectgarbage()
-   return r
+    local r = {}
+    local e = request:find("\r\n", 1, true)
+    if not e then 
+        print("httpserver-request.lc: nil e")
+        r.methodIsValid = false
+        return r
+    end
+    local line = request:sub(1, e - 1)
+    local _ = {}
+    local i = {}
+    _, i, r.method, r.request = line:find("^([A-Z]+) (.-) HTTP/[1-9]+.[0-9]+$")
+    r.methodIsValid = validateMethod(r.method)
+    r.uri = parseUri(r.request)
+    r.getRequestData = getRequestData(request)
+    collectgarbage()
+    return r
 end
