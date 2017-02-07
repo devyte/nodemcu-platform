@@ -1,50 +1,47 @@
-return function(connarg)
--- a simple telnet server
+return function(port)
+    assert((not not wifi.sta.getip()) or (not not wifi.ap.getip()), "tcpserver: No viable IP found")
+--FIXME: should also assert 0 < port <= 65K
 
-    local conn = connarg
-    
-    local function detect(payload)
-        local b = string.sub(payload, 1, 1)
-        return b == "\r" or b == "\n"
-    end
+    local luasrv = net.createServer(net.TCP, 180)
+    luasrv:listen(port, function(socket)
+        local fifo = {}
+        local fifo_drained = true
 
-    local fifo = {}
-    local fifo_drained = true
-
-    local function onSent(c)
-        if #fifo > 0 then
-            c:send(table.remove(fifo, 1))
-        else
-            fifo_drained = true
+        local function onSent(c)
+            if #fifo > 0 then
+                c:send(table.remove(fifo, 1))
+            else
+                fifo_drained = true
+            end
         end
-    end
 
-    local function s_output(str)
-        table.insert(fifo, str)
-        if conn ~= nil and fifo_drained then
-            fifo_drained = false
-            onSent(conn)
+        local function s_output(str)
+            table.insert(fifo, str)
+            if socket ~= nil and fifo_drained then
+                fifo_drained = false
+                onSent(socket)
+            end
         end
-    end
 
-    local function onReceive(c, payload)
-        node.input(payload)
-    end
+        local function onReceive(c, payload)
+        uart.write(0, payload..'\n')
+            node.input(payload)
+        end
 
-    local function onDisconnection(c)
-        node.output(nil)        -- un-regist the redirect output function, output goes to serial
-    end
+        local function onDisconnect(c)
+            node.output(nil)
+        end
 
+        node.output(s_output, 0)
 
-    local function install(c)    
-        node.output(s_output, 0)   -- re-direct output to function s_ouput.
+        socket:on("receive", onReceive)
+        socket:on("disconnection", onDisconnect)
+        socket:on("sent", onSent)
 
-        c:on("receive", onReceive)
-        c:on("disconnection", onDisconnection)
-        c:on("sent", onSent)
+        print("Welcome to NodeMCU world.")
+    end)
 
-        print("Welcome to NodeMcu world.")
-    end
-
-    return {detect = detect, install = install, onReceive = onReceive}
+    print("luaserver running on port "..port)
+    return luasrv
 end
+

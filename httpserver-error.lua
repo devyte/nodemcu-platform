@@ -4,12 +4,12 @@
 
 return function (connection, req, args)
 
-   local function sendHeader(connection, code, errorString, extraHeaders, mimeType)
-      connection:send("HTTP/1.0 " .. code .. " " .. errorString .. "\r\nServer: nodemcu-httpserver\r\nContent-Type: " .. mimeType .. "\r\n")
+   local function sendHeader(conn, code, errorString, extraHeaders, mimeType)
+      conn:send("HTTP/1.0 " .. code .. " " .. errorString .. "\r\nServer: nodemcu-httpserver\r\nContent-Type: " .. mimeType .. "\r\n")
       for i, header in ipairs(extraHeaders) do
-         connection:send(header .. "\r\n")
+         conn:send(header .. "\r\n")
       end 
-      connection:send("connection: close\r\n\r\n")
+      conn:send("connection: close\r\n\r\n")
    end
 
    print("Error " .. args.code .. ": " .. args.errorString)
